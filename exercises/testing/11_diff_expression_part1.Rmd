@@ -1,0 +1,81 @@
+---
+title: "Differential expression between male and female patient samples (part I)"
+author: "YOUR NAME"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Here we will test for differential expression of genes in the CLL data. Note that dedicated methods exists for the task of differential expression testing that make use of (unnormalized) counts for each gene and patient sample instead of normalized expression values. These can be much more powerful and better calibrated for RNA-seq data and we will learn more about them in the summer course.
+
+# Preparations
+0. Load the tidyverse collection of libraries that includes ggplot2 and dplyr.
+```{r}
+# to be filled
+```
+
+For these exercises, we will use a new dataset that is contained in the Bioconductor MOFAdata package that contains different molecular read-outs on a set of patient samples. For this Rmd, we only need the gene expression values (mRNA slot of the list) and add the gender of each patient. Install the `MOFAdata` package and run the following code.
+```{r}
+library(MOFAdata)
+data("CLL_data")
+data("CLL_covariates")
+CLL_covariates <- rownames_to_column(CLL_covariates, "patient_sample")
+
+# select mRNA data from list
+mRNA <- t(CLL_data$mRNA)
+# get rid of patient samples without gene expression measurements
+has_no_mRNA <- apply(mRNA, 1, function(x) all(is.na(x)))
+mRNA_complete <- mRNA[!has_no_mRNA,]
+# convert data to long format
+mRNA_df <- mRNA_complete %>% as.data.frame() %>%
+  rownames_to_column(var = "patient_sample") %>%
+  pivot_longer(-patient_sample, names_to = "gene", values_to = "gene_expression") %>%
+  as.data.frame() %>%
+  left_join(CLL_covariates, by = "patient_sample")
+```
+
+# Part I: Differential expression testing
+
+1. Check how the mrna_df data frame looks like and how many patients it includes. Optional task: how many males and females are included in the data frame?
+```{r}
+# to be filled
+```
+
+2. Select one gene and conduct a t-test of its expression values for male and female samples. How can you extract the p-value from the test results? Take a look at the help of ?t.test to find out. Then plot a boxplot of the genes expression for male and female samples.
+```{r}
+# to be filled
+```
+
+3. Repeat step 2 to compute the p-values for all genes using a for-loop or the `sapply` function.  (Note: If this takes too long on your laptop, only do this for the first 500 genes.)
+```{r}
+# to be filled
+```
+
+4. How many p-values are below 0.05?
+```{r}
+# to be filled
+```
+
+5. Plot a boxplot for some of the genes with a p-value < 0.05 for male versus female patients.
+```{r}
+# to be filled
+```
+
+6. Calculate the difference in mean expression between samples from male and female patients for each gene (using a for loop or `sapply`).
+```{r}
+# to be filled
+```
+
+7. Create a data.frame that contains the p-values, mean expression difference and gene name for each gene using `data.frame`.  
+```{r}
+# to be filled
+```
+
+8. Save the data.frame from step 7. using the `saveRDS` function in a file called `DE_results_CLL.RDS`.
+```{r}
+# to be filled
+```
+
+```{r}
+sessionInfo()
+```
+
